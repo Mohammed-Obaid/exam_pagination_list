@@ -1,0 +1,27 @@
+Analyzing exam_pagination_list...                               
+
+   info • The imported package 'equatable' isn't a dependency of the importing package • lib/core/error/failures.dart:1:8 • depend_on_referenced_packages
+   info • Parameter 'message' could be a super parameter • lib/core/error/failures.dart:13:9 • use_super_parameters
+   info • The imported package 'dio' isn't a dependency of the importing package • lib/features/properties/data/datasources/property_remote_datasource.dart:1:8 • depend_on_referenced_packages
+   info • Parameters ''street', 'city', 'state', and 'zipcode'' could be super parameters • lib/features/properties/data/models/address_model.dart:4:9 • use_super_parameters
+   info • Parameters ''latitude' and 'longitude'' could be super parameters • lib/features/properties/data/models/lat_long_model.dart:4:9 • use_super_parameters
+   info • Parameters ''isFSBA' and 'isOpenHouse'' could be super parameters • lib/features/properties/data/models/listing_sub_type_model.dart:4:9 • use_super_parameters
+   info • Parameters ''id', 'price', 'unformattedPrice', 'beds', 'baths', 'area', 'livingArea', 'homeType', 'marketingStatus', 'homeStatus', 'rentZestimate', 'timeOnZillow', 'has3DModel', 'statusText', 'imgSrc', 'detailUrl', 'daysOnZillow', and 'zestimate'' could be super parameters • lib/features/properties/data/models/property_model.dart:7:9 • use_super_parameters
+   info • The imported package 'dartz' isn't a dependency of the importing package • lib/features/properties/data/repositories/property_repository_impl.dart:1:8 • depend_on_referenced_packages
+   info • The imported package 'equatable' isn't a dependency of the importing package • lib/features/properties/domain/entities/address.dart:1:8 • depend_on_referenced_packages
+   info • The imported package 'equatable' isn't a dependency of the importing package • lib/features/properties/domain/entities/lat_long.dart:1:8 • depend_on_referenced_packages
+   info • The imported package 'equatable' isn't a dependency of the importing package • lib/features/properties/domain/entities/listing_sub_type.dart:1:8 • depend_on_referenced_packages
+   info • The imported package 'equatable' isn't a dependency of the importing package • lib/features/properties/domain/entities/property.dart:1:8 • depend_on_referenced_packages
+   info • The imported package 'dartz' isn't a dependency of the importing package • lib/features/properties/domain/repositories/property_repository.dart:1:8 • depend_on_referenced_packages
+   info • The imported package 'dartz' isn't a dependency of the importing package • lib/features/properties/domain/usecases/get_properties.dart:5:8 • depend_on_referenced_packages
+   info • The imported package 'flutter_bloc' isn't a dependency of the importing package • lib/features/properties/presentation/bloc/property_bloc.dart:2:8 • depend_on_referenced_packages
+   info • The imported package 'equatable' isn't a dependency of the importing package • lib/features/properties/presentation/bloc/property_event.dart:1:8 • depend_on_referenced_packages
+   info • The imported package 'equatable' isn't a dependency of the importing package • lib/features/properties/presentation/bloc/property_state.dart:1:8 • depend_on_referenced_packages
+   info • The imported package 'flutter_bloc' isn't a dependency of the importing package • lib/features/properties/presentation/pages/property_page.dart:3:8 • depend_on_referenced_packages
+warning • Unused import: '../../domain/entities/property.dart' • lib/features/properties/presentation/pages/property_page.dart:8:8 • unused_import
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/properties/presentation/widgets/property_card.dart:20:33 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/properties/presentation/widgets/property_card.dart:45:40 • deprecated_member_use
+   info • The imported package 'get_it' isn't a dependency of the importing package • lib/injection_container.dart:1:8 • depend_on_referenced_packages
+   info • The imported package 'dio' isn't a dependency of the importing package • lib/injection_container.dart:2:8 • depend_on_referenced_packages
+   info • The imported package 'flutter_bloc' isn't a dependency of the importing package • lib/main.dart:3:8 • depend_on_referenced_packages
+
