@@ -7,7 +7,7 @@ class AppConstants {
   static const String realEstateSearchByUrlPath = '/api/search/byurl';
 
   static const String realEstateApiKey =
-      'a674269553mshe7b6cb70dd4db97p17678cjsnde52b6c8e4f5';
+      '00c3d4986bmshbb367acd0eb629dp1a489bjsn4d575b8b041f';
   static const String realEstateApiHost = 'real-estate101.p.rapidapi.com';
 
   static const String zillowNewYorkSearchUrl =
