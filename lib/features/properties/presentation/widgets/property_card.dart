@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import '../../../../config/app_colors.dart';
 import '../../../../config/app_radii.dart';
+import '../../../../config/app_colors.dart';
 import '../../../../config/app_spacing.dart';
+import '../../domain/entities/property.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../config/app_text_styles.dart';
 import '../../../../config/app_button_styles.dart';
-import '../../domain/entities/property.dart';
 
-/// Display status used so every card matches the target design (Replacement / Renewal / Grace Period).
-const _displayStatuses = ['Replacement', 'Renewal', 'Grace Period'];
+
+/// Display statuses from server; used for chip label and fallback when statusText is not in this list.
+const _displayStatuses = [
+  'House for sale',
+  'Condo for sale',
+  'Townhouse for sale',
+  'Multi-family home for sale',
+  'Apartment for sale',
+  'Coming soon',
+];
 
 class PropertyCard extends StatelessWidget {
   final Property property;
@@ -103,30 +110,25 @@ class PropertyCard extends StatelessWidget {
     return '${months[now.month - 1]} ${now.day}, ${now.year} $ampm';
   }
 
-  /// Returns one of [Replacement, Renewal, Grace Period] so card style matches target design.
+  /// Returns the status text to show on the card (from server or fallback).
   String get _displayStatus {
-    final st = property.statusText.toLowerCase();
-    if (st.contains('replacement')) return 'Replacement';
-    if (st.contains('renewal')) return 'Renewal';
-    if (st.contains('grace')) return 'Grace Period';
+    final fromServer = property.statusText.trim();
+    if (_displayStatuses.contains(fromServer)) return fromServer;
     if (index != null) {
       return _displayStatuses[index! % _displayStatuses.length];
     }
     final ht = property.homeType.toLowerCase();
-    if (ht.contains('house')) return 'Replacement';
-    if (ht.contains('condo')) return 'Renewal';
-    return 'Grace Period';
+    if (ht.contains('house')) return 'House for sale';
+    if (ht.contains('condo')) return 'Condo for sale';
+    if (ht.contains('townhouse')) return 'Townhouse for sale';
+    if (ht.contains('multi') || ht.contains('family')) return 'Multi-family home for sale';
+    if (ht.contains('apartment')) return 'Apartment for sale';
+    return _displayStatuses.first;
   }
 
   int _requestedDaysFor(String displayStatus) {
-    switch (displayStatus) {
-      case 'Renewal':
-        return 10;
-      case 'Grace Period':
-        return 3;
-      default:
-        return property.beds > 0 ? property.beds : 5;
-    }
+    if (displayStatus == 'Coming soon') return 3;
+    return property.beds > 0 ? property.beds : 5;
   }
 
   @override
@@ -284,7 +286,6 @@ class PropertyCard extends StatelessWidget {
               'Price: ',
               style: AppTextStyles.cardTitle.copyWith(
                 color: AppColors.bookingIdLabel,
-                // fontWeight: FontWeight.w400,
               ),
             ),
             Text(
@@ -299,14 +300,17 @@ class PropertyCard extends StatelessWidget {
 
   ({Color bg, Color text}) _statusChipStyle(String displayStatus) {
     switch (displayStatus) {
-      case 'Replacement':
+      case 'House for sale':
+      case 'Townhouse for sale':
+      case 'Multi-family home for sale':
         return (
           bg: AppColors.replacementChipBg,
           text: AppColors.replacementChipText
         );
-      case 'Renewal':
+      case 'Condo for sale':
+      case 'Apartment for sale':
         return (bg: AppColors.renewalChipBg, text: AppColors.renewalChipText);
-      case 'Grace Period':
+      case 'Coming soon':
         return (
           bg: AppColors.gracePeriodChipBg,
           text: AppColors.gracePeriodChipText
