@@ -7,7 +7,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../config/app_text_styles.dart';
 import '../../../../config/app_button_styles.dart';
 
-
 /// Display statuses from server; used for chip label and fallback when statusText is not in this list.
 const _displayStatuses = [
   'House for sale',
@@ -90,24 +89,9 @@ class PropertyCard extends StatelessWidget {
     );
   }
 
-  String get _dateTimeText {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
-    final now = DateTime.now();
-    final ampm = now.hour >= 12 ? 'PM' : 'AM';
-    return '${months[now.month - 1]} ${now.day}, ${now.year} $ampm';
+  String get _daysOnZillowText {
+    final days = property.daysOnZillow;
+    return '$days ${days == 1 ? 'day' : 'days'}';
   }
 
   /// Returns the status text to show on the card (from server or fallback).
@@ -121,7 +105,8 @@ class PropertyCard extends StatelessWidget {
     if (ht.contains('house')) return 'House for sale';
     if (ht.contains('condo')) return 'Condo for sale';
     if (ht.contains('townhouse')) return 'Townhouse for sale';
-    if (ht.contains('multi') || ht.contains('family')) return 'Multi-family home for sale';
+    if (ht.contains('multi') || ht.contains('family'))
+      return 'Multi-family home for sale';
     if (ht.contains('apartment')) return 'Apartment for sale';
     return _displayStatuses.first;
   }
@@ -193,7 +178,7 @@ class PropertyCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.xxs),
           Text(
-            _dateTimeText,
+            _daysOnZillowText,
             style: AppTextStyles.dateTime,
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -209,7 +194,7 @@ class PropertyCard extends StatelessWidget {
                 const Icon(
                   Icons.location_on,
                   size: 18,
-                  color: Color(0xFFFF9800),
+                  color: AppColors.textPrimary,
                 ),
                 const SizedBox(width: AppSpacing.xs),
                 Expanded(
