@@ -7,23 +7,10 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../config/app_text_styles.dart';
 import '../../../../config/app_button_styles.dart';
 
-/// Display statuses from server; used for chip label and fallback when statusText is not in this list.
-const _displayStatuses = [
-  'House for sale',
-  'Condo for sale',
-  'Townhouse for sale',
-  'Multi-family home for sale',
-  'Apartment for sale',
-  'Coming soon',
-];
-
 class PropertyCard extends StatelessWidget {
   final Property property;
 
-  /// Optional list index; used to derive display status when API returns e.g. "House for sale".
-  final int? index;
-
-  const PropertyCard({super.key, required this.property, this.index});
+  const PropertyCard({super.key, required this.property});
 
   void _openInMaps() async {
     final lat = property.latLong.latitude;
@@ -94,32 +81,21 @@ class PropertyCard extends StatelessWidget {
     return '$days ${days == 1 ? 'day' : 'days'}';
   }
 
-  /// Returns the status text to show on the card (from server or fallback).
-  String get _displayStatus {
-    final fromServer = property.statusText.trim();
-    if (_displayStatuses.contains(fromServer)) return fromServer;
-    if (index != null) {
-      return _displayStatuses[index! % _displayStatuses.length];
-    }
-    final ht = property.homeType.toLowerCase();
-    if (ht.contains('house')) return 'House for sale';
-    if (ht.contains('condo')) return 'Condo for sale';
-    if (ht.contains('townhouse')) return 'Townhouse for sale';
-    if (ht.contains('multi') || ht.contains('family'))
-      return 'Multi-family home for sale';
-    if (ht.contains('apartment')) return 'Apartment for sale';
-    return _displayStatuses.first;
-  }
-
-  int _requestedDaysFor(String displayStatus) {
-    if (displayStatus == 'Coming soon') return 3;
-    return property.beds > 0 ? property.beds : 5;
+  /// Converts raw homeStatus (e.g. FOR_SALE) to display text (e.g. For Sale).
+  static String _formatHomeStatus(String raw) {
+    if (raw.isEmpty) return raw;
+    return raw
+        .split('_')
+        .map((w) =>
+            w.isEmpty ? '' : '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}')
+        .join(' ');
   }
 
   @override
   Widget build(BuildContext context) {
-    final displayStatus = _displayStatus;
-    final chipStyle = _statusChipStyle(displayStatus);
+    final homeStatus = property.homeStatus;
+    final homeStatusDisplay = _formatHomeStatus(homeStatus);
+    final chipStyle = _statusChipStyle(homeStatus);
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.cardVertical),
@@ -168,7 +144,7 @@ class PropertyCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppRadii.chip),
                 ),
                 child: Text(
-                  displayStatus,
+                  homeStatusDisplay,
                   style: AppTextStyles.chip.copyWith(color: chipStyle.text),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -184,7 +160,7 @@ class PropertyCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           const Divider(color: AppColors.dividerColor, height: 1, thickness: 1),
           const SizedBox(height: AppSpacing.sm),
-          _buildStatusBody(displayStatus),
+          _buildStatusBody(homeStatusDisplay),
           const SizedBox(height: AppSpacing.sm),
           GestureDetector(
             onTap: _openInMaps,
@@ -283,18 +259,13 @@ class PropertyCard extends StatelessWidget {
     );
   }
 
-  ({Color bg, Color text}) _statusChipStyle(String displayStatus) {
-    switch (displayStatus) {
-      case 'House for sale':
-      case 'Townhouse for sale':
-      case 'Multi-family home for sale':
+  ({Color bg, Color text}) _statusChipStyle(String homeStatus) {
+    switch (homeStatus) {
+      case 'FOR_SALE':
         return (
           bg: AppColors.replacementChipBg,
           text: AppColors.replacementChipText
         );
-      case 'Condo for sale':
-      case 'Apartment for sale':
-        return (bg: AppColors.renewalChipBg, text: AppColors.renewalChipText);
       case 'Coming soon':
         return (
           bg: AppColors.gracePeriodChipBg,

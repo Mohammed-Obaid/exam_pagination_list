@@ -226,7 +226,7 @@ class _PropertyPageState extends State<PropertyPage> {
 
                     final property = state.properties[index];
 
-                    return PropertyCard(property: property, index: index);
+                    return PropertyCard(property: property);
                   },
                 );
               },
