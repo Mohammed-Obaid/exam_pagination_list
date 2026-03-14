@@ -3,9 +3,9 @@ import '../bloc/property_event.dart';
 import '../bloc/property_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:exam_pagination_list/config/app_radii.dart';
 import 'package:exam_pagination_list/config/app_colors.dart';
 import 'package:exam_pagination_list/config/app_spacing.dart';
-import 'package:exam_pagination_list/config/app_radii.dart';
 import 'package:exam_pagination_list/config/app_text_styles.dart';
 import 'package:exam_pagination_list/features/properties/presentation/widgets/property_card.dart';
 
@@ -47,51 +47,76 @@ class _PropertyPageState extends State<PropertyPage> {
     return Scaffold(
       backgroundColor: AppColors.backgroundPrimary,
       appBar: AppBar(
-        backgroundColor: AppColors.backgroundPrimary,
+        backgroundColor: AppColors.appBarBackground,
         elevation: 0,
         scrolledUnderElevation: 0,
         titleSpacing: AppSpacing.screenHorizontal,
-        title: const Text(
-          'Welcome, Prince Company',
-          style: AppTextStyles.greeting,
+        title: Row(
+          children: [
+            const Text(
+              'Welcome, Prince Company',
+              style: AppTextStyles.greeting,
+            ),
+            const SizedBox(width: AppSpacing.xxs),
+            Transform.scale(
+              scale: 0.9,
+              child: Switch(
+                value: _toggleValue,
+                onChanged: (v) => setState(() => _toggleValue = v),
+                activeTrackColor: AppColors.appBarAccentGreen,
+                thumbColor: WidgetStateProperty.all(Colors.white),
+              ),
+            ),
+          ],
         ),
         actions: [
-          Switch(
-            value: _toggleValue,
-            onChanged: (v) => setState(() => _toggleValue = v),
-            activeTrackColor: AppColors.primaryGreen,
-            thumbColor: WidgetStateProperty.all(Colors.white),
-          ),
-          const SizedBox(width: 8),
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications_outlined),
-                color: AppColors.textPrimary,
-                onPressed: () {},
-              ),
-              Positioned(
-                top: 6,
-                right: 6,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryGreen,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Text(
-                    '99+',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
+          const SizedBox(width: 12),
+          Padding(
+            padding: const EdgeInsets.only(right: AppSpacing.screenHorizontal),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Material(
+                  color: AppColors.appBarIconCircle,
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    onTap: () {},
+                    customBorder: const CircleBorder(),
+                    child: const SizedBox(
+                      width: 44,
+                      height: 44,
+                      child: Icon(
+                        Icons.notifications_outlined,
+                        color: Colors.white,
+                        size: 24,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+                Positioned(
+                  top: -6,
+                  right: -6,
+                  child: Container(
+                    width: 22,
+                    height: 22,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppColors.appBarAccentGreen,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 1),
+                    ),
+                    child: const Text(
+                      '99+',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

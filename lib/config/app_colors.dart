@@ -54,4 +54,11 @@ class AppColors {
   static const Color acceptButtonFg = Color(0xFF20694c);
   static const Color rejectButtonBg = Color(0xFFFFEBEE);
   static const Color rejectButtonFg = Color(0xFFD32F2F);
+
+  // App bar - notification icon circle (dark gray/charcoal from design)
+  static const Color appBarIconCircle = Color(0xFF2C3136);
+  // App bar - toggle active track & notification badge (dark forest green)
+  static const Color appBarAccentGreen = Color(0xFF007a47);
+  // App bar background (light desaturated green - matches design)
+  static const Color appBarBackground = Color(0xFFE8F0E8);
 }

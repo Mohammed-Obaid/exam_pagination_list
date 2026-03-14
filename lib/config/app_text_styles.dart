@@ -2,10 +2,10 @@ import 'app_colors.dart';
 import 'package:flutter/material.dart';
 
 class AppTextStyles {
-  // App bar greeting
+  // App bar greeting - prominent, dark gray, semi-bold (matches design)
   static const TextStyle greeting = TextStyle(
-    fontWeight: FontWeight.bold,
-    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    fontSize: 16,
     color: AppColors.textPrimary,
   );
 
