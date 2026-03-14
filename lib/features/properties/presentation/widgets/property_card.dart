@@ -86,8 +86,9 @@ class PropertyCard extends StatelessWidget {
     if (raw.isEmpty) return raw;
     return raw
         .split('_')
-        .map((w) =>
-            w.isEmpty ? '' : '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}')
+        .map((w) => w.isEmpty
+            ? ''
+            : '${w[0].toUpperCase()}${w.substring(1).toLowerCase()}')
         .join(' ');
   }
 
@@ -97,118 +98,122 @@ class PropertyCard extends StatelessWidget {
     final homeStatusDisplay = _formatHomeStatus(homeStatus);
     final chipStyle = _statusChipStyle(homeStatus);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.cardVertical),
-      padding: const EdgeInsets.all(AppSpacing.cardPadding),
-      decoration: BoxDecoration(
-        color: AppColors.cardBackground,
-        borderRadius: BorderRadius.circular(AppRadii.card),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 8,
-            spreadRadius: 0,
-            color: Colors.black.withOpacity(0.06),
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text.rich(
-                TextSpan(
-                  text: 'Booking ID: ',
-                  style: AppTextStyles.cardTitle.copyWith(
-                    color: AppColors.bookingIdLabel,
-                    // fontWeight: FontWeight.w400,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: '#${property.id ?? "—"}',
-                      style: AppTextStyles.cardTitle.copyWith(
-                        color: AppColors.bookingIdValue,
-                        // fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: chipStyle.bg,
-                  borderRadius: BorderRadius.circular(AppRadii.chip),
-                ),
-                child: Text(
-                  homeStatusDisplay,
-                  style: AppTextStyles.chip.copyWith(color: chipStyle.text),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.xxs),
-          Text(
-            _daysOnZillowText,
-            style: AppTextStyles.dateTime,
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          const Divider(color: AppColors.dividerColor, height: 1, thickness: 1),
-          const SizedBox(height: AppSpacing.sm),
-          _buildStatusBody(homeStatusDisplay),
-          const SizedBox(height: AppSpacing.sm),
-          GestureDetector(
-            onTap: _openInMaps,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return GestureDetector(
+      onTap: _openInMaps,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: AppSpacing.cardVertical),
+        padding: const EdgeInsets.all(AppSpacing.cardPadding),
+        decoration: BoxDecoration(
+          color: AppColors.cardBackground,
+          borderRadius: BorderRadius.circular(AppRadii.card),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 8,
+              spreadRadius: 0,
+              color: Colors.black.withOpacity(0.06),
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(
-                  Icons.location_on,
-                  size: 18,
-                  color: AppColors.textPrimary,
+                Text.rich(
+                  TextSpan(
+                    text: 'Booking ID: ',
+                    style: AppTextStyles.cardTitle.copyWith(
+                      color: AppColors.bookingIdLabel,
+                      // fontWeight: FontWeight.w400,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: '#${property.id ?? "—"}',
+                        style: AppTextStyles.cardTitle.copyWith(
+                          color: AppColors.bookingIdValue,
+                          // fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(width: AppSpacing.xs),
-                Expanded(
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: chipStyle.bg,
+                    borderRadius: BorderRadius.circular(AppRadii.chip),
+                  ),
                   child: Text(
-                    '${property.address.street}, ${property.address.city}, ${property.address.state} - ${property.address.zipcode}',
-                    style: AppTextStyles.location,
+                    homeStatusDisplay,
+                    style: AppTextStyles.chip.copyWith(color: chipStyle.text),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => _onAccept(context),
-                  style: AppButtonStyles.acceptOutlined,
-                  child: const Text(
-                    'Accept',
-                    style: AppTextStyles.primaryAction,
+            const SizedBox(height: AppSpacing.xxs),
+            Text(
+              _daysOnZillowText,
+              style: AppTextStyles.dateTime,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            const Divider(
+                color: AppColors.dividerColor, height: 1, thickness: 1),
+            const SizedBox(height: AppSpacing.sm),
+            _buildStatusBody(homeStatusDisplay),
+            const SizedBox(height: AppSpacing.sm),
+            GestureDetector(
+              onTap: _openInMaps,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.location_on,
+                    size: 18,
+                    color: AppColors.textPrimary,
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
+                  Expanded(
+                    child: Text(
+                      '${property.address.street}, ${property.address.city}, ${property.address.state} - ${property.address.zipcode}',
+                      style: AppTextStyles.location,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _onAccept(context),
+                    style: AppButtonStyles.acceptOutlined,
+                    child: const Text(
+                      'Accept',
+                      style: AppTextStyles.primaryAction,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => _onReject(context),
-                  style: AppButtonStyles.rejectOutlined,
-                  child: const Text(
-                    'Reject',
-                    style: AppTextStyles.destructiveAction,
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _onReject(context),
+                    style: AppButtonStyles.rejectOutlined,
+                    child: const Text(
+                      'Reject',
+                      style: AppTextStyles.destructiveAction,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
