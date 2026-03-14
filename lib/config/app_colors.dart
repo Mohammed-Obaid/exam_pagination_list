@@ -20,8 +20,8 @@ class AppColors {
   static const Color renewalChipText = Color(0xFF2196F3);
 
   // Status chips - Grace Period
-  static const Color gracePeriodChipBg = Color(0xFFE8FDD8);
-  static const Color gracePeriodChipText = Color(0xFF64DD17);
+  static const Color gracePeriodChipBg = Color(0xFFe5f1ed);
+  static const Color gracePeriodChipText = Color(0xFF007a47);
 
   // Location link
   static const Color locationBlue = Color(0xFF2196F3);
