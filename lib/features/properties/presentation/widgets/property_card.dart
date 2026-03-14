@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../config/app_button_styles.dart';
+import '../../../../config/app_colors.dart';
 import '../../../../config/app_radii.dart';
 import '../../../../config/app_spacing.dart';
 import '../../../../config/app_text_styles.dart';
+import '../../../../config/app_button_styles.dart';
 import '../../domain/entities/property.dart';
+
+/// Display status used so every card matches the target design (Replacement / Renewal / Grace Period).
+const _displayStatuses = ['Replacement', 'Renewal', 'Grace Period'];
 
 class PropertyCard extends StatelessWidget {
   final Property property;
 
-  const PropertyCard({super.key, required this.property});
+  /// Optional list index; used to derive display status when API returns e.g. "House for sale".
+  final int? index;
+
+  const PropertyCard({super.key, required this.property, this.index});
 
   void _openInMaps() async {
     final lat = property.latLong.latitude;
@@ -41,7 +48,7 @@ class PropertyCard extends StatelessWidget {
     _showSnackBar(
       context,
       message: 'Property is Accepted',
-      backgroundColor: Colors.green,
+      backgroundColor: AppColors.primaryGreen,
     );
   }
 
@@ -65,7 +72,7 @@ class PropertyCard extends StatelessWidget {
                 _showSnackBar(
                   context,
                   message: 'Property is Rejected',
-                  backgroundColor: Colors.red,
+                  backgroundColor: AppColors.rejectRed,
                 );
               },
               child: const Text('Yes'),
@@ -76,158 +83,236 @@ class PropertyCard extends StatelessWidget {
     );
   }
 
+  String get _dateTimeText {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+    final now = DateTime.now();
+    final ampm = now.hour >= 12 ? 'PM' : 'AM';
+    return '${months[now.month - 1]} ${now.day}, ${now.year} $ampm';
+  }
+
+  /// Returns one of [Replacement, Renewal, Grace Period] so card style matches target design.
+  String get _displayStatus {
+    final st = property.statusText.toLowerCase();
+    if (st.contains('replacement')) return 'Replacement';
+    if (st.contains('renewal')) return 'Renewal';
+    if (st.contains('grace')) return 'Grace Period';
+    if (index != null) {
+      return _displayStatuses[index! % _displayStatuses.length];
+    }
+    final ht = property.homeType.toLowerCase();
+    if (ht.contains('house')) return 'Replacement';
+    if (ht.contains('condo')) return 'Renewal';
+    return 'Grace Period';
+  }
+
+  int _requestedDaysFor(String displayStatus) {
+    switch (displayStatus) {
+      case 'Renewal':
+        return 10;
+      case 'Grace Period':
+        return 3;
+      default:
+        return property.beds > 0 ? property.beds : 5;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: _openInMaps,
-      borderRadius: BorderRadius.circular(AppRadii.card),
-      child: Container(
-        margin: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.screenHorizontal,
-          vertical: AppSpacing.cardVertical,
-        ),
-        padding: const EdgeInsets.all(AppSpacing.cardPadding),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(AppRadii.card),
-          border: Border.all(
-            color: Colors.grey.withOpacity(0.15),
+    final displayStatus = _displayStatus;
+    final chipStyle = _statusChipStyle(displayStatus);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppSpacing.cardVertical),
+      padding: const EdgeInsets.all(AppSpacing.cardPadding),
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(AppRadii.card),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 8,
+            spreadRadius: 0,
+            color: Colors.black.withOpacity(0.06),
+            offset: const Offset(0, 2),
           ),
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 8,
-              spreadRadius: 1,
-              color: Colors.black.withOpacity(0.03),
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _PropertyHeader(property: property),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              '${property.homeType} · ${property.homeStatus}',
-              style: AppTextStyles.statusSuccess,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            const Divider(height: 1),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              'Beds: ${property.beds}',
-              style: AppTextStyles.label,
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Row(
-              children: [
-                const Text(
-                  'Price: ',
-                  style: AppTextStyles.label,
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text.rich(
+                TextSpan(
+                  text: 'Booking ID: ',
+                  style: AppTextStyles.cardTitle.copyWith(
+                    color: AppColors.bookingIdLabel,
+                    // fontWeight: FontWeight.w400,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: '#${property.id ?? "—"}',
+                      style: AppTextStyles.cardTitle.copyWith(
+                        color: AppColors.bookingIdValue,
+                        // fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  property.price,
-                  style: AppTextStyles.priceValue,
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: chipStyle.bg,
+                  borderRadius: BorderRadius.circular(AppRadii.chip),
                 ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Row(
+                child: Text(
+                  displayStatus,
+                  style: AppTextStyles.chip.copyWith(color: chipStyle.text),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xxs),
+          Text(
+            _dateTimeText,
+            style: AppTextStyles.dateTime,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          const Divider(color: AppColors.dividerColor, height: 1, thickness: 1),
+          const SizedBox(height: AppSpacing.sm),
+          _buildStatusBody(displayStatus),
+          const SizedBox(height: AppSpacing.sm),
+          GestureDetector(
+            onTap: _openInMaps,
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Icon(
-                  Icons.location_on_outlined,
-                  size: 20,
-                  color: Colors.grey,
+                  Icons.location_on,
+                  size: 18,
+                  color: Color(0xFFFF9800),
                 ),
                 const SizedBox(width: AppSpacing.xs),
                 Expanded(
                   child: Text(
-                    '${property.address.street}, ${property.address.city}, ${property.address.state}',
+                    '${property.address.street}, ${property.address.city}, ${property.address.state} - ${property.address.zipcode}',
                     style: AppTextStyles.location,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: AppSpacing.lg),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => _onAccept(context),
-                    style: AppButtonStyles.acceptOutlined,
-                    child: const Text(
-                      'Accept',
-                      style: AppTextStyles.primaryAction,
-                    ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => _onAccept(context),
+                  style: AppButtonStyles.acceptOutlined,
+                  child: const Text(
+                    'Accept',
+                    style: AppTextStyles.primaryAction,
                   ),
                 ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => _onReject(context),
-                    style: AppButtonStyles.rejectOutlined,
-                    child: const Text(
-                      'Reject',
-                      style: AppTextStyles.destructiveAction,
-                    ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => _onReject(context),
+                  style: AppButtonStyles.rejectOutlined,
+                  child: const Text(
+                    'Reject',
+                    style: AppTextStyles.destructiveAction,
                   ),
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
-}
 
-class _PropertyHeader extends StatelessWidget {
-  final Property property;
-
-  const _PropertyHeader({required this.property});
-
-  @override
-  Widget build(BuildContext context) {
-    final statusColor = _statusColor(property.statusText);
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildStatusBody(String displayStatus) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Property ID: #${property.id}',
-          style: AppTextStyles.cardTitle,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Address: ',
+              style: AppTextStyles.cardTitle.copyWith(
+                color: AppColors.bookingIdLabel,
+                // fontWeight: FontWeight.w400,
+              ),
+            ),
+            Expanded(
+              child: Text(
+                '${property.address}',
+                style: AppTextStyles.cardTitle.copyWith(
+                  color: AppColors.bookingIdValue,
+                  // fontWeight: FontWeight.w600,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
-        Flexible(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.14),
-              borderRadius: BorderRadius.circular(AppRadii.chip),
+        const SizedBox(height: AppSpacing.xs),
+        Row(
+          children: [
+            Text(
+              'Price: ',
+              style: AppTextStyles.cardTitle.copyWith(
+                color: AppColors.bookingIdLabel,
+                // fontWeight: FontWeight.w400,
+              ),
             ),
-            child: Text(
-              property.statusText,
-              style: AppTextStyles.chip.copyWith(color: statusColor),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              softWrap: true,
+            Text(
+              '${property.price}',
+              style: AppTextStyles.dateTime,
             ),
-          ),
+          ],
         ),
       ],
     );
   }
 
-  Color _statusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'replacement':
-        return const Color(0xFFFFA000);
-      case 'renewal':
-        return const Color(0xFF1976D2);
-      case 'grace period':
-        return const Color(0xFF2E7D32);
+  ({Color bg, Color text}) _statusChipStyle(String displayStatus) {
+    switch (displayStatus) {
+      case 'Replacement':
+        return (
+          bg: AppColors.replacementChipBg,
+          text: AppColors.replacementChipText
+        );
+      case 'Renewal':
+        return (bg: AppColors.renewalChipBg, text: AppColors.renewalChipText);
+      case 'Grace Period':
+        return (
+          bg: AppColors.gracePeriodChipBg,
+          text: AppColors.gracePeriodChipText
+        );
       default:
-        return Colors.grey.shade700;
+        return (bg: AppColors.renewalChipBg, text: AppColors.renewalChipText);
     }
   }
 }

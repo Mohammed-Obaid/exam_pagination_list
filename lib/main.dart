@@ -2,6 +2,7 @@ import 'package:exam_pagination_list/features/properties/presentation/pages/prop
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'config/app_colors.dart';
 import 'config/app_constants.dart';
 import 'injection_container.dart' as di;
 import 'features/properties/presentation/bloc/property_bloc.dart';
@@ -23,13 +24,17 @@ class MyApp extends StatelessWidget {
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.primaryGreen,
+          brightness: Brightness.light,
+        ),
         useMaterial3: true,
+        scaffoldBackgroundColor: AppColors.backgroundPrimary,
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.teal,
-          foregroundColor: Colors.white,
-          centerTitle: true,
-          elevation: 2,
+          backgroundColor: AppColors.backgroundPrimary,
+          foregroundColor: AppColors.textPrimary,
+          elevation: 0,
+          scrolledUnderElevation: 0,
         ),
       ),
       home: BlocProvider(
